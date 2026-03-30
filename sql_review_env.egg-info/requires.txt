@@ -1,0 +1,9 @@
+openenv-core
+fastapi
+uvicorn[standard]
+pydantic>=2.0
+openai
+
+[dev]
+pytest
+httpx

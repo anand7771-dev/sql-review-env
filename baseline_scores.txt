@@ -1,0 +1,15 @@
+  [easy] step 1 -> reward: 0.6875
+  [easy] step 2 -> reward: 0.6875
+  [easy] step 3 -> reward: 0.6875
+  [medium] step 1 -> reward: 0.8875
+  [medium] step 2 -> reward: 0.8875
+  [medium] step 3 -> reward: 0.8875
+  [hard] step 1 -> reward: 0.8000
+  [hard] step 2 -> reward: 0.8000
+  [hard] step 3 -> reward: 0.8000
+
+-- Baseline Scores ----------
+  easy    : 0.6875
+  medium  : 0.8875
+  hard    : 0.8000
+  average : 0.7917

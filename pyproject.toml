@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sql-review-env"
+version = "1.0.0"
+description = "An OpenEnv RL environment for training LLM agents to review and rewrite SQL queries"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+
+dependencies = [
+    "openenv-core",
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic>=2.0",
+    "openai",
+]
+
+[project.scripts]
+sql-review-env = "server.app:main"
+server = "server.app:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "httpx",
+]
+
+[tool.setuptools.packages.find]
+include = ["server*", "models*", "client*"]

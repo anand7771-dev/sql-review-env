@@ -1,0 +1,42 @@
+﻿DEBUG PROMPT PREVIEW [Len: 42]:
+Schema:
+
+
+Query to review:
+
+
+Task: 
+Hint: ...
+  [easy] step 1 ΓåÆ reward: 0.0500
+  [easy] step 2 ΓåÆ reward: 0.0500
+  [easy] step 3 ΓåÆ reward: 0.0500
+DEBUG PROMPT PREVIEW [Len: 42]:
+Schema:
+
+
+Query to review:
+
+
+Task: 
+Hint: ...
+  [medium] step 1 ΓåÆ reward: 0.0500
+  [medium] step 2 ΓåÆ reward: 0.0500
+  [medium] step 3 ΓåÆ reward: 0.0500
+DEBUG PROMPT PREVIEW [Len: 42]:
+Schema:
+
+
+Query to review:
+
+
+Task: 
+Hint: ...
+  [hard] step 1 ΓåÆ reward: 0.0000
+  [hard] step 2 ΓåÆ reward: 0.0000
+  [hard] step 3 ΓåÆ reward: 0.0000
+
+ΓöÇΓöÇ Baseline Scores ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+  easy    : 0.0500
+  medium  : 0.0500
+  hard    : 0.0000
+  average : 0.0333

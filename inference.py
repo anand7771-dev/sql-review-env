@@ -1,0 +1,71 @@
+import os, json
+from openai import OpenAI
+from client import SQLReviewEnv
+from models import SQLReviewAction
+
+API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
+API_KEY      = os.getenv("HF_TOKEN")
+MODEL_NAME   = os.getenv("MODEL_NAME")
+HF_SPACE_URL = os.getenv("HF_SPACE_URL")
+
+SYSTEM_PROMPT = """You are a SQL expert. You receive a SQL schema, a broken or
+inefficient query, and a task description. Rewrite the query to fix or improve it.
+Respond ONLY with valid JSON in this exact format (no markdown, no backticks):
+{"rewritten_query": "SELECT ...", "explanation": "Reason for changes..."}"""
+
+DIFFICULTIES = ["easy", "medium", "hard"]
+
+def _parse(text):
+    try:
+        return json.loads(text.strip())
+    except Exception:
+        import re
+        m = re.search(r'\{.*\}', text, re.DOTALL)
+        if m:
+            return json.loads(m.group(0))
+        return {"rewritten_query": text.strip(), "explanation": ""}
+
+def main():
+    client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
+    scores = {}
+
+    for difficulty in DIFFICULTIES:
+        with SQLReviewEnv(base_url=HF_SPACE_URL).sync() as env:
+            result = env.reset(difficulty=difficulty)
+            obs = result.observation
+            episode_scores = []
+
+            for step in range(3):
+                if result.done:
+                    break
+                user_msg = (
+                    f"Schema:\n{obs.schema_ddl}\n\n"
+                    f"Query to review:\n{obs.original_query}\n\n"
+                    f"Task: {obs.task_description}\n"
+                    f"Hint: {obs.issue_hint}"
+                )
+                resp = client.chat.completions.create(
+                    model=MODEL_NAME,
+                    max_tokens=800,
+                    temperature=0.1,
+                    messages=[
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        {"role": "user",   "content": user_msg},
+                    ],
+                )
+                parsed = _parse(resp.choices[0].message.content)
+                action = SQLReviewAction(**parsed)
+                result = env.step(action)
+                obs = result.observation
+                episode_scores.append(result.reward or 0.0)
+                print(f"  [{difficulty}] step {step+1} -> reward: {result.reward:.4f}")
+
+            scores[difficulty] = max(episode_scores, default=0.0)
+
+    print("\n-- Baseline Scores ----------")
+    for d, s in scores.items():
+        print(f"  {d:8s}: {s:.4f}")
+    print(f"  average : {sum(scores.values())/len(scores):.4f}")
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,6 @@
+[FAIL] : Not ready for multi-mode deployment
+
+Issues found:
+  - Missing [project.scripts] server entry point
+
+---STDERR---

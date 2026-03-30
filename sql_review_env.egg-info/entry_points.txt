@@ -1,0 +1,3 @@
+[console_scripts]
+server = server.app:main
+sql-review-env = server.app:main

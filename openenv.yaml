@@ -1,0 +1,33 @@
+name: sql-review-env
+version: "1.0.0"
+description: |
+  An RL environment for training LLM agents to review and rewrite SQL queries.
+  Covers correctness fixes, performance optimization, and complex restructuring.
+  Three difficulty tiers with 20+ scenarios. Deterministic grading via in-memory SQLite.
+tags: [openenv, sql, code-review, data-engineering, optimization]
+
+tasks:
+  - id: fix_broken_sql
+    description: Fix a broken or incorrect SQL query
+    difficulty: easy
+  - id: optimize_slow_query
+    description: Optimize a correct but inefficient query
+    difficulty: medium
+  - id: rewrite_complex_query
+    description: Rewrite a complex multi-table or window-function query
+    difficulty: hard
+
+action_space:
+  rewritten_query: str
+  explanation: str (optional)
+
+observation_space:
+  schema_ddl: str
+  original_query: str
+  sample_data: dict
+  issue_hint: str
+  task_description: str
+  difficulty: str
+
+reward_range: [0.0, 1.0]
+max_steps_per_episode: 3
