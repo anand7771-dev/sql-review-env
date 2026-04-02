@@ -4,8 +4,8 @@ from client import SQLReviewEnv
 from models import SQLReviewAction
 
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
-API_KEY      = os.getenv("HF_TOKEN")
-MODEL_NAME   = os.getenv("MODEL_NAME")
+HF_TOKEN     = os.getenv("HF_TOKEN")
+MODEL_NAME   = os.getenv("MODEL_NAME", "meta-llama/Meta-Llama-3.1-8B-Instruct")
 HF_SPACE_URL = os.getenv("HF_SPACE_URL")
 
 SYSTEM_PROMPT = """You are a SQL expert. You receive a SQL schema, a broken or
@@ -26,7 +26,7 @@ def _parse(text):
         return {"rewritten_query": text.strip(), "explanation": ""}
 
 def main():
-    client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
+    client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
     scores = {}
 
     for difficulty in DIFFICULTIES:
