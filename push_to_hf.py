@@ -17,8 +17,8 @@ def main():
         folder_path=".",
         repo_id=repo_id,
         repo_type="space",
-        ignore_patterns=["*.pyc", "__pycache__/*", ".venv/*", "push_to_hf.py", ".git/*", "uv.lock", "*.webp", "*.png", "val_out*.txt", "validate_output.txt"],
-        commit_message="Update environment with structural grading and new scenarios"
+        ignore_patterns=["*.pyc", "__pycache__/*", ".venv/*", "push_to_hf.py", ".git/*", "*.webp", "*.png", "val_out*.txt", "validate_output.txt"],
+        commit_message="Add uv.lock for multi-mode deployment validation"
     )
     
     print("Upload complete!")
