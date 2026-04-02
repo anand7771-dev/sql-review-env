@@ -5,11 +5,18 @@ from models import SQLReviewAction
 
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 HF_TOKEN     = os.getenv("HF_TOKEN")
-MODEL_NAME   = os.getenv("MODEL_NAME", "meta-llama/Meta-Llama-3.1-8B-Instruct")
+MODEL_NAME   = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-Coder-32B-Instruct")
 HF_SPACE_URL = os.getenv("HF_SPACE_URL")
 
-SYSTEM_PROMPT = """You are a SQL expert. You receive a SQL schema, a broken or
-inefficient query, and a task description. Rewrite the query to fix or improve it.
+SYSTEM_PROMPT = """You are a Principal Data Engineer. You receive a SQL schema, a broken or
+inefficient query, and a task description. 
+
+RULES FOR MAX REWARD:
+1. Prefer explicit JOINs over implicit comma-separated WHERE joins.
+2. Use Window Functions instead of slow correlated subqueries where possible.
+3. Ensure exact output column names match the requested task.
+4. Keep the query strictly ANSI SQL compliant.
+
 Respond ONLY with valid JSON in this exact format (no markdown, no backticks):
 {"rewritten_query": "SELECT ...", "explanation": "Reason for changes..."}"""
 
