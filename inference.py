@@ -6,7 +6,7 @@ from models import SQLReviewAction
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 HF_TOKEN     = os.getenv("HF_TOKEN")
 MODEL_NAME   = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-Coder-32B-Instruct")
-HF_SPACE_URL = os.getenv("HF_SPACE_URL")
+HF_SPACE_URL = os.getenv("HF_SPACE_URL", "http://localhost:7860")
 
 SYSTEM_PROMPT = """You are a Principal Data Engineer. You receive a SQL schema, a broken or
 inefficient query, and a task description. 
@@ -38,38 +38,41 @@ def main():
 
     for difficulty in DIFFICULTIES:
         print(f"START: {difficulty} scenario")
-        with SQLReviewEnv(base_url=HF_SPACE_URL).sync() as env:
-            result = env.reset(difficulty=difficulty)
-            obs = result.observation
-            episode_scores = []
-
-            for step in range(3):
-                if result.done:
-                    break
-                user_msg = (
-                    f"Schema:\n{obs.schema_ddl}\n\n"
-                    f"Query to review:\n{obs.original_query}\n\n"
-                    f"Task: {obs.task_description}\n"
-                    f"Hint: {obs.issue_hint}"
-                )
-                resp = client.chat.completions.create(
-                    model=MODEL_NAME,
-                    max_tokens=800,
-                    temperature=0.1,
-                    messages=[
-                        {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user",   "content": user_msg},
-                    ],
-                )
-                parsed = _parse(resp.choices[0].message.content)
-                action = SQLReviewAction(**parsed)
-                result = env.step(action)
+        episode_scores = []
+        try:
+            with SQLReviewEnv(base_url=HF_SPACE_URL).sync() as env:
+                result = env.reset(difficulty=difficulty)
                 obs = result.observation
-                episode_scores.append(result.reward or 0.0)
-                print(f"STEP: {step+1} | reward: {result.reward:.4f}")
 
-            scores[difficulty] = max(episode_scores, default=0.0)
-            print(f"END: {difficulty} | final score: {scores[difficulty]:.4f}")
+                for step in range(3):
+                    if result.done:
+                        break
+                    user_msg = (
+                        f"Schema:\n{obs.schema_ddl}\n\n"
+                        f"Query to review:\n{obs.original_query}\n\n"
+                        f"Task: {obs.task_description}\n"
+                        f"Hint: {obs.issue_hint}"
+                    )
+                    resp = client.chat.completions.create(
+                        model=MODEL_NAME,
+                        max_tokens=800,
+                        temperature=0.1,
+                        messages=[
+                            {"role": "system", "content": SYSTEM_PROMPT},
+                            {"role": "user",   "content": user_msg},
+                        ],
+                    )
+                    parsed = _parse(resp.choices[0].message.content)
+                    action = SQLReviewAction(**parsed)
+                    result = env.step(action)
+                    obs = result.observation
+                    episode_scores.append(result.reward or 0.0)
+                    print(f"STEP: {step+1} | reward: {result.reward:.4f}")
+        except Exception as e:
+            print(f"Error occurred during {difficulty} scenario: {e}")
+
+        scores[difficulty] = max(episode_scores, default=0.0)
+        print(f"END: {difficulty} | final score: {scores[difficulty]:.4f}")
 
     print("\n-- Baseline Scores ----------")
     for d, s in scores.items():
