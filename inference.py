@@ -37,7 +37,7 @@ def main():
     scores = {}
 
     for difficulty in DIFFICULTIES:
-        print(f"START: {difficulty} scenario")
+        print(f"[START] task={difficulty}", flush=True)
         episode_scores = []
         try:
             with SQLReviewEnv(base_url=HF_SPACE_URL).sync() as env:
@@ -67,12 +67,12 @@ def main():
                     result = env.step(action)
                     obs = result.observation
                     episode_scores.append(result.reward or 0.0)
-                    print(f"STEP: {step+1} | reward: {result.reward:.4f}")
+                    print(f"[STEP] step={step+1} reward={result.reward:.4f}", flush=True)
         except Exception as e:
             print(f"Error occurred during {difficulty} scenario: {e}")
 
         scores[difficulty] = max(episode_scores, default=0.0)
-        print(f"END: {difficulty} | final score: {scores[difficulty]:.4f}")
+        print(f"[END] task={difficulty} score={scores[difficulty]:.4f} steps={len(episode_scores)}", flush=True)
 
     print("\n-- Baseline Scores ----------")
     for d, s in scores.items():
